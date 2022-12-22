@@ -76,13 +76,14 @@ module.exports.getFileData = (userId, pageNumber, search) => {
         //Query for fetching data with page number and offset (and search)
         if ((search == '') || (search == null)) {
             console.log('Prepare query without search text');
-            designFileDataQuery = `SELECT file_id,cloudinary_url,design_title,design_description 
-        FROM file  WHERE created_by_id=${userId}  LIMIT ${limit} OFFSET ${offset};
-        SET @total_records =(SELECT count(file_id) FROM file WHERE created_by_id= ${userId}   );SELECT @total_records total_records; `;
+            designFileDataQuery = `
+            SELECT file_id,cloudinary_url,design_title,design_description
+        FROM file, (SELECT @id := ?) AS var WHERE created_by_id = @id  LIMIT ${limit} OFFSET ${offset};
+        SET @total_records =(SELECT count(file_id) FROM file WHERE created_by_id= @id   );SELECT @total_records total_records; `;
         } else {
             designFileDataQuery = `SELECT file_id,cloudinary_url,design_title,design_description 
-            FROM file  WHERE created_by_id=${userId} AND design_title LIKE '%${search}%'  LIMIT ${limit} OFFSET ${offset};
-            SET @total_records =(SELECT count(file_id) FROM file WHERE created_by_id= ${userId} AND design_title LIKE '%${search}%' );SELECT @total_records total_records;`;
+            FROM file, (SELECT @id := ?) AS var, (SELECT @search := ?) AS s WHERE created_by_id = @id AND design_title LIKE CONCAT('%', @search, '%') LIMIT ${limit} OFFSET ${offset};
+            SET @total_records =(SELECT count(file_id) FROM file WHERE created_by_id= @id AND design_title LIKE CONCAT('%', @search, '%') );SELECT @total_records total_records;`;
         }
         //--------------------------------------------------------------------
         //designFileDataQuery = `CALL sp_get_paged_file_records(?,?,?,?, @total_records); SELECT @total_records total_records;`;
@@ -96,7 +97,7 @@ module.exports.getFileData = (userId, pageNumber, search) => {
                     resolve(err);
                 } else {
                     console.log('Executing query to obtain 1 page of 3 data');
-                    connection.query(designFileDataQuery, [userId, search, offset, limit], (err, results) => {
+                    const query = connection.query(designFileDataQuery, [userId, search, offset, limit], (err, results) => {
                         if (err) {
                             console.log('Error on query on reading data from the file table', err);
                             reject(err);
@@ -108,6 +109,7 @@ module.exports.getFileData = (userId, pageNumber, search) => {
                         }
                         connection.release();
                     });
+                    console.log(query.sql)
                 }
             });
         }); //End of new Promise object creation
