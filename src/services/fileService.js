@@ -97,7 +97,7 @@ module.exports.getFileData = (userId, pageNumber, search) => {
                     resolve(err);
                 } else {
                     console.log('Executing query to obtain 1 page of 3 data');
-                    const query = connection.query(designFileDataQuery, [userId, search, offset, limit], (err, results) => {
+                    connection.query(designFileDataQuery, [userId, search, offset, limit], (err, results) => {
                         if (err) {
                             console.log('Error on query on reading data from the file table', err);
                             reject(err);
@@ -109,7 +109,6 @@ module.exports.getFileData = (userId, pageNumber, search) => {
                         }
                         connection.release();
                     });
-                    console.log(query.sql)
                 }
             });
         }); //End of new Promise object creation

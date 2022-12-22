@@ -8,7 +8,9 @@ module.exports.checkForValidUserRoleUser = (req, res, next) => {
         if (typeof req.headers.authorization !== "undefined") {
             // Retrieve the authorization header and parse out the
             // JWT using the split function
-            let token = req.headers.authorization.split(' ')[1];
+            console.log(req.headers)
+            let token = req.headers.authorization.split('Bearer ')[1];
+            console.log("Token: ", token)
             //console.log('Check for received token from frontend : \n');
             //console.log(token);
             jwt.verify(token, config.JWTKey, (err, data) => {

@@ -109,7 +109,7 @@ module.exports.getOneUserData = function(recordId) {
         console.log('getOneUserData method is called.');
         console.log('Prepare query to fetch one user record');
         userDataQuery = `SELECT user_id, fullname, email, user.role_id, role_name 
-        FROM user INNER JOIN role ON user.role_id = role.role_id WHERE user_id=` + recordId;
+        FROM user INNER JOIN role ON user.role_id = role.role_id WHERE user_id=?`;
 
         return new Promise((resolve, reject) => {
             //I referred to https://www.codota.com/code/javascript/functions/mysql/Pool/getConnection
@@ -119,7 +119,7 @@ module.exports.getOneUserData = function(recordId) {
                     console.log('Database connection error ', err);
                     resolve(err);
                 } else {
-                    connection.query(userDataQuery, (err, results) => {
+                    connection.query(userDataQuery, [recordId], (err, results) => {
                         if (err) {
                             reject(err);
                         } else {
@@ -163,8 +163,8 @@ module.exports.getOneUserData = function(recordId) {
 module.exports.getOneDesignData = function(recordId) {
         console.log('getOneDesignData method is called.');
         console.log('Prepare query to fetch one design record');
-        userDataQuery = `SELECT file_id,cloudinary_file_id,cloudinary_url,design_title,design_description 
-        FROM file WHERE file_id=` + recordId;
+        userDataQuery = `SELECT file_id,cloudinary_file_id,cloudinary_url,design_title,design_description, created_by_id
+        FROM file WHERE file_id=?`;
 
         return new Promise((resolve, reject) => {
             //I referred to https://www.codota.com/code/javascript/functions/mysql/Pool/getConnection
@@ -174,7 +174,7 @@ module.exports.getOneDesignData = function(recordId) {
                     console.log('Database connection error ', err);
                     resolve(err);
                 } else {
-                    connection.query(userDataQuery, (err, results) => {
+                    connection.query(userDataQuery, [recordId], (err, results) => {
                         if (err) {
                             reject(err);
                         } else {

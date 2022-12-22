@@ -1,6 +1,7 @@
 const userManager = require('../services/userService');
 const fileDataManager = require('../services/fileService');
 const config = require('../config/config');
+const validationFn = require('../services/validationService');
 
 // 
 exports.processDesignSubmission = (req, res, next) => {
@@ -47,6 +48,7 @@ exports.processGetSubmissionData = async(req, res, next) => {
         let results = await fileDataManager.getFileData(userId, pageNumber, search);
         console.log('Inspect result variable inside processGetSubmissionData code\n', results);
         if (results) {
+            validationFn.sanitizeDesign(results[0]);
             var jsonResult = {
                 'number_of_records': results[0].length,
                 'page_number': pageNumber,
@@ -77,6 +79,7 @@ exports.processGetSubmissionsbyEmail = async(req, res, next) => {
         let results = await fileDataManager.getFileDataByUserId(userData[0].user_id, pageNumber);
         console.log('Inspect result variable inside processGetSubmissionsbyEmail code\n', results);
         if (results) {
+            validationFn.sanitizeDesign(results[0]);
             var jsonResult = {
                 'number_of_records': results[0].length,
                 'page_number': pageNumber,
@@ -103,6 +106,7 @@ exports.processGetUserData = async(req, res, next) => {
         let results = await userManager.getUserData(pageNumber, search);
         console.log('Inspect result variable inside processGetUserData code\n', results);
         if (results) {
+            validationFn.sanitizeUser(results[0])
             var jsonResult = {
                 'number_of_records': results[0].length,
                 'page_number': pageNumber,
@@ -127,6 +131,7 @@ exports.processGetOneUserData = async(req, res, next) => {
         let results = await userManager.getOneUserData(recordId);
         console.log('Inspect result variable inside processGetOneUserData code\n', results);
         if (results) {
+            validationFn.sanitizeUser(results)
             var jsonResult = {
                 'userdata': results[0],
             }
@@ -164,13 +169,18 @@ exports.processGetOneDesignData = async(req, res, next) => {
     let recordId = req.params.fileId;
 
     try {
+        let userId = req.body.userId;
         let results = await userManager.getOneDesignData(recordId);
         console.log('Inspect result variable inside processGetOneFileData code\n', results);
         if (results) {
-            var jsonResult = {
-                'filedata': results[0],
+            if(results[0].created_by_id == userId){
+                var jsonResult = {
+                    'filedata': results[0],
+                }
+                return res.status(200).json(jsonResult);
+            }else{
+                return res.status(403).send();
             }
-            return res.status(200).json(jsonResult);
         }
     } catch (error) {
         let message = 'Server is unable to process the request.';
