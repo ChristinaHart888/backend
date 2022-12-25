@@ -126,6 +126,9 @@ exports.processGetUserData = async(req, res, next) => {
 
 exports.processGetOneUserData = async(req, res, next) => {
     let recordId = req.params.recordId;
+    if (recordId == null){
+        recordId = req.body.userId
+    }
 
     try {
         let results = await userManager.getOneUserData(recordId);
