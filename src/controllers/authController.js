@@ -42,6 +42,7 @@ exports.processLogin = (req, res, next) => {
                         return res.status(200).json(data);
                     } else {
                         // return res.status(500).json({ message: 'Login has failed.' });
+                        console.log("Failed Login Has Occured...")
                         return res.status(500).json({ message: error });
                     } //End of passowrd comparison with the retrieved decoded password.
                 } //End of checking if there are returned SQL results

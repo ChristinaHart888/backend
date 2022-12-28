@@ -158,6 +158,7 @@ exports.processUpdateOneUser = async(req, res, next) => {
     try {
         results = await userManager.updateUser(recordId, newRoleId);
         console.log(results);
+        console.log("!!!!!!!!!!Amin Updated!!!!!!!!!!")
         return res.status(200).json({ message: 'Completed update' });
     } catch (error) {
         console.log('processUpdateOneUser method : catch block section code is running');
