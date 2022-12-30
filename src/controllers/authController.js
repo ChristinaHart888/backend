@@ -3,6 +3,7 @@ const auth = require('../services/authService');
 const bcrypt = require('bcrypt');
 const config = require('../config/config');
 const jwt = require('jsonwebtoken');
+const CryptoJS = require('crypto-js')
 
 
 
@@ -10,6 +11,10 @@ exports.processLogin = (req, res, next) => {
 
     let email = req.body.email;
     let password = req.body.password;
+
+    var bytes  = CryptoJS.AES.decrypt(password, 'passwordThatsMeantToBeStoredSomewhereElse');
+    password = bytes.toString(CryptoJS.enc.Utf8);
+
     try {
         auth.authenticate(email, function(error, results) {
             if (error) {
