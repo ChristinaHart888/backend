@@ -42,20 +42,26 @@ module.exports.checkForAdmin = (req, res, next) => {
         //console.log(token);
         jwt.verify(token, config.JWTKey, (err, data) => {
             console.log('data extracted from token \n',data);
-            userManager.getOneUserData(data.id)
-            .then((results) => {
-                console.log("Results: ", results)
-                let role = results[0].role_id;
-                console.log("Role: ", role);
-                if (err || role != 1) {
-                    console.log(err);
-                    return res.status(403).send({ message: 'Unauthorized access' });
-                }
-                else {
-                    req.body.userId = data.id;
-                    next();
-                }
-            })
+            console.log(data == null)
+            if(token != 'null' && data != null){
+               userManager.getOneUserData(data.id)
+                .then((results) => {
+                    console.log("Results: ", results)
+                    let role = results[0].role_id;
+                    console.log("Role: ", role);
+                    if (err || role != 1) {
+                        console.log(err);
+                        return res.status(403).send({ message: 'Unauthorized access' });
+                    }
+                    else {
+                        req.body.userId = data.id;
+                        next();
+                    }
+                }) 
+            }else{
+                return res.status(403).send({message: 'Not logged in'})
+            }
+            
         })
   }else{
     res.status(403).send({ message: 'Unauthorized access' });
@@ -67,9 +73,6 @@ module.exports.viewProfile = (req, res, next) => {
         // Retrieve the authorization header and parse out the
         // JWT using the split function
         let token = req.headers.authorization.split('Bearer ')[1];
-        console.log("Header: ", req.headers.authorization)
-        console.log("Token: ", token)
-        console.log("Checking Profile, ParamID: ", req.params.recordId == null)
         //console.log('Check for received token from frontend : \n');
         //console.log(token);
         jwt.verify(token, config.JWTKey, (err, data) => {
