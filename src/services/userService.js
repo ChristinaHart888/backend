@@ -77,8 +77,8 @@ module.exports.getUserData = (pageNumber, search) => {
         SET @total_records =(SELECT count(user_id) FROM user    );SELECT @total_records total_records; `;
         } else {
             userDataQuery = `SELECT user_id, fullname, email, role_name 
-        FROM user INNER JOIN role ON user.role_id = role.role_id AND fullname LIKE '%${search}%'  LIMIT ${limit} OFFSET ${offset};
-    SET @total_records =(SELECT count(user_id) FROM user WHERE fullname LIKE '%${search}%' );SELECT @total_records total_records;`;
+        FROM user, (SELECT @search := ?) INNER JOIN role ON user.role_id = role.role_id AND fullname LIKE '%@search%'  LIMIT ${limit} OFFSET ${offset};
+    SET @total_records =(SELECT count(user_id) FROM user WHERE fullname LIKE '%@search%' );SELECT @total_records total_records;`;
         }
 
         return new Promise((resolve, reject) => {

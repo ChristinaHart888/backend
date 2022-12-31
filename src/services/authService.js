@@ -9,7 +9,7 @@ module.exports.authenticate = (email, callback) => {
             } else {
                 try {
                     connection.query(`SELECT user.user_id, fullname, email, user_password, role_name, user.role_id  
-                   FROM user INNER JOIN role ON user.role_id=role.role_id AND email='${email}'`, {}, (err, rows) => {
+                   FROM user INNER JOIN role ON user.role_id=role.role_id AND email=?`, [email], (err, rows) => {
                         if (err) {
                             if (err) return callback(err, null);
 

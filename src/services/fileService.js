@@ -128,7 +128,7 @@ module.exports.getFileData = (userId, pageNumber, search) => {
 
             designFileDataQuery = `SELECT file_id,cloudinary_url,design_title,design_description 
             FROM file, (SELECT @id := ?) AS uid  WHERE created_by_id=@id LIMIT ? OFFSET ?;
-            SET @total_records =(SELECT count(file_id) FROM file WHERE created_by_id= @id} );SELECT @total_records total_records;`;
+            SET @total_records =(SELECT count(file_id) FROM file WHERE created_by_id= @id );SELECT @total_records total_records;`;
         return new Promise((resolve, reject) => {
             //I referred to https://www.codota.com/code/javascript/functions/mysql/Pool/getConnection
             //to prepare the following code pattern which does not use callback technique (uses Promise technique)
@@ -138,7 +138,7 @@ module.exports.getFileData = (userId, pageNumber, search) => {
                     resolve(err);
                 } else {
                     console.log('Executing query to obtain 1 page of 3 data');
-                    connection.query(designFileDataQuery, [userId,  offset, limit], (err, results) => {
+                    connection.query(designFileDataQuery, [userId, limit, offset], (err, results) => {
                         if (err) {
                             console.log('Error on query on reading data from the file table', err);
                             reject(err);
