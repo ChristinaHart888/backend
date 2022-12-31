@@ -27,7 +27,7 @@ exports.processLogin = (req, res, next) => {
                 //attack and anticipate how much "rewards" after the effort.
                 //Rewards such as sabotage (seriously damage the data in database), 
                 //data theft (grab and sell). 
-                return res.status(500).json({ message: error });
+                return res.status(500).json({ message: message });
 
             } else {
                 if (results.length == 1) {
@@ -74,18 +74,18 @@ exports.processRegister = (req, res, next) => {
     bcrypt.hash(password, 10, async(err, hash) => {
         if (err) {
             console.log('Error on hashing password');
-            return res.status(500).json({ statusMessage: 'Unable to complete registration' });
+            return res.status(500).json({ message: 'Unable to complete registration' });
         } else {
             
                 results = user.createUser(fullName, email, hash, function(results, error){
                   if (results!=null){
                     console.log(results);
-                    return res.status(200).json({ statusMessage: 'Completed registration.' });
+                    return res.status(200).json({ message: 'Completed registration.' });
                   }
                   if (error) {
                     console.log('processRegister method : callback error block section is running.');
                     console.log(error, '==================================================================');
-                    return res.status(500).json({ statusMessage: 'Unable to complete registration' });
+                    return res.status(500).json({ message: 'Unable to complete registration' });
                 }
                 });//End of anonymous callback function
      

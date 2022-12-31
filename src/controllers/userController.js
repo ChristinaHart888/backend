@@ -60,7 +60,7 @@ exports.processGetSubmissionData = async(req, res, next) => {
     } catch (error) {
         let message = 'Server is unable to process your request.';
         return res.status(500).json({
-            message: error
+            message: message
         });
     }
 
@@ -92,7 +92,7 @@ exports.processGetSubmissionsbyEmail = async(req, res, next) => {
     } catch (error) {
         let message = 'Server is unable to process your request.';
         return res.status(500).json({
-            message: error
+            message: message
         });
     }
 
@@ -118,7 +118,7 @@ exports.processGetUserData = async(req, res, next) => {
     } catch (error) {
         let message = 'Server is unable to process your request.';
         return res.status(500).json({
-            message: error
+            message: message
         });
     }
 
@@ -143,7 +143,7 @@ exports.processGetOneUserData = async(req, res, next) => {
     } catch (error) {
         let message = 'Server is unable to process your request.';
         return res.status(500).json({
-            message: error
+            message: message
         });
     }
 
@@ -189,7 +189,7 @@ exports.processGetOneDesignData = async(req, res, next) => {
     } catch (error) {
         let message = 'Server is unable to process the request.';
         return res.status(500).json({
-            message: error
+            message: message
         });
     }
 
