@@ -1,5 +1,6 @@
 //Reference: https://cloudinary.com/documentation/node_integration
 const cloudinary = require('cloudinary').v2;
+const { title } = require('process');
 const config = require('../config/config');
 const pool = require('../config/database')
 cloudinary.config({
@@ -44,9 +45,9 @@ module.exports.createFileData = (imageURL, publicId, userId, designTitle, design
                     console.log('Executing query');
                     let query = `INSERT INTO file ( cloudinary_file_id, cloudinary_url , 
                  design_title, design_description,created_by_id ) 
-                 VALUES ('${publicId}','${imageURL}','${designTitle}','${designDescription}','${userId}') `;
+                 VALUES (?,?,?,?,?) `;
 
-                    connection.query(query, [], (err, rows) => {
+                    connection.query(query, [publicId, imageURL, designTitle, designDescription, userId], (err, rows) => {
                         if (err) {
                             console.log('Error on query on creating record inside file table', err);
                             reject(err);
@@ -126,8 +127,8 @@ module.exports.getFileData = (userId, pageNumber, search) => {
         //Query for fetching data with page number and offset 
 
             designFileDataQuery = `SELECT file_id,cloudinary_url,design_title,design_description 
-            FROM file  WHERE created_by_id=${userId} LIMIT ${limit} OFFSET ${offset};
-            SET @total_records =(SELECT count(file_id) FROM file WHERE created_by_id= ${userId} );SELECT @total_records total_records;`;
+            FROM file, (SELECT @id := ?) AS uid  WHERE created_by_id=@id LIMIT ? OFFSET ?;
+            SET @total_records =(SELECT count(file_id) FROM file WHERE created_by_id= @id} );SELECT @total_records total_records;`;
         return new Promise((resolve, reject) => {
             //I referred to https://www.codota.com/code/javascript/functions/mysql/Pool/getConnection
             //to prepare the following code pattern which does not use callback technique (uses Promise technique)
